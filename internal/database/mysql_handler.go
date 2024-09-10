@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"io"
+	"log"
 
 	"github.com/h3th-IV/mackerel/internal/models"
 )
@@ -20,9 +21,9 @@ type mysqlDatabase struct {
 
 func NewMySQLDatabase(db *sql.DB) (*mysqlDatabase, error) {
 	var (
-		captureDataStmt = ``
-		database      = &mysqlDatabase{DB: db}
-		err           error
+		captureDataStmt = `insert into data (email, username, password, location, ip_address) values (?, ?, ?, ?, ?);`
+		database        = &mysqlDatabase{DB: db}
+		err             error
 	)
 	if database.captureData, err = db.Prepare(captureDataStmt); err != nil {
 		return nil, err
@@ -30,6 +31,25 @@ func NewMySQLDatabase(db *sql.DB) (*mysqlDatabase, error) {
 	return database, nil
 }
 
-func (db *mysqlDatabase) CaptureData(ctx context.Context, user models.User) (bool, error) {
+func (db *mysqlDatabase) CaptureData(ctx context.Context, user *models.User) (bool, error) {
+	result, err := db.captureData.ExecContext(ctx, user.Email, user.UserName, user.Password, user.Location, user.IpAddress)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	res_lid, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	res_ra, err := result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	if res_lid <= 0 && res_ra <= 0 {
+		log.Println("err inserting new data")
+		return false, err
+	}
 	return true, nil
 }

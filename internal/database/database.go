@@ -10,5 +10,5 @@ import (
 type Database interface {
 	io.Closer
 
-	CaptureData(ctx context.Context, user models.User) (bool, error)
+	CaptureData(ctx context.Context, user *models.User) (bool, error)
 }
