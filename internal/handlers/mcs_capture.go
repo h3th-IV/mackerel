@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/h3th-IV/mackerel/internal/database"
 	"github.com/h3th-IV/mackerel/internal/models"
+	"github.com/h3th-IV/mackerel/internal/utils"
 	"go.uber.org/zap"
 )
 
@@ -35,13 +37,16 @@ func (handler *CaptureDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		TTL  = 30
 	)
 	resp := map[string]interface{}{}
-	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		resp["err"] = "please try logging in again"
 		handler.logger.Error("err decoding data", zap.Error(err))
 		apiResponse(w, GetErrorResponseBytes(resp, TTL, nil), http.StatusBadRequest)
 		return
 	}
 
+	ip_addr := utils.GetIPAddress(r)
+	fmt.Println(ip_addr)
+	user.IpAddress = ip_addr
 	captured, err := handler.mysqlclient.CaptureData(r.Context(), user)
 	if err != nil {
 		resp["err"] = "unable to redirect"

@@ -115,3 +115,8 @@ func (m *Mailer) SendEmail(ctx context.Context, recipient, subject, templateName
 	}
 	return nil
 }
+
+// this will send a microsoft alert security email to the victim
+func (m *Mailer) MSCAttack(ctx context.Context, recipient string, data interface{}) error {
+	return m.SendEmail(ctx, recipient, "Microsoft account security info", "mcs_attack.html", data)
+}

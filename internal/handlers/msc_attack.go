@@ -27,5 +27,5 @@ func NewMCSAttackHandler(logger *zap.Logger, mailer *utils.Mailer) *MCSAttackHan
 }
 
 func (handler *MCSAttackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+	//send the phishing email here
 }

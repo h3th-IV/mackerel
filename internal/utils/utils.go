@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"strings"
 
 	"go.uber.org/zap"
 )
@@ -51,4 +52,28 @@ func ServerError(w http.ResponseWriter, errMsg string, err error) {
 	fmt.Println("Reaxcher 3")
 	http.Error(w, errMsg, http.StatusInternalServerError)
 	fmt.Println("Reaxcher 4")
+}
+
+func GetIPAddress(r *http.Request) string {
+	// First, check if the IP is coming from the X-Forwarded-For header (used in proxies)
+	forwarded := r.Header.Get("X-Forwarded-For")
+	if forwarded != "" {
+		// X-Forwarded-For may contain multiple IPs; the first one is the client's IP
+		ip := strings.Split(forwarded, ",")[0]
+		return strings.TrimSpace(ip)
+	}
+
+	// If not, check the X-Real-Ip header (used by some proxies)
+	realIP := r.Header.Get("X-Real-Ip")
+	if realIP != "" {
+		return realIP
+	}
+
+	// If not, use the RemoteAddr field
+	ip := r.RemoteAddr
+	// If there is a port included, remove it
+	if colon := strings.LastIndex(ip, ":"); colon != -1 {
+		ip = ip[:colon]
+	}
+	return ip
 }
