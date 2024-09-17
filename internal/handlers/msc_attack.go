@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/h3th-IV/mackerel/internal/utils"
@@ -27,5 +28,30 @@ func NewMCSAttackHandler(logger *zap.Logger, mailer *utils.Mailer) *MCSAttackHan
 }
 
 func (handler *MCSAttackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//send the phishing email here
+	// Extract victim email from the request (for testing or real CLI integration)
+	victimEmail := r.URL.Query().Get("email")
+	if victimEmail == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+
+	// Prepare the phishing email data
+	data := struct {
+		Email         string
+		MaliciousLink string
+	}{
+		Email:         victimEmail,
+		MaliciousLink: "http://fake-malicious-site.com/login", // Replace with your fake phishing link
+	}
+
+	// Send the email
+	err := handler.mailer.MSCAttack(context.TODO(), victimEmail, data)
+	if err != nil {
+		handler.logger.Error("Failed to send phishing email", zap.Error(err))
+		http.Error(w, "Failed to send email", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Phishing email sent successfully"))
 }
