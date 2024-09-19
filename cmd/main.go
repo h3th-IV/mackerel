@@ -12,7 +12,7 @@ func main() {
 	fmt.Println("hello world")
 	app := &cli.App{
 		Name:  "mackerel",
-		Usage: "mackerel is n00b phishing tool",
+		Usage: "A phishing simulation tool",
 		Commands: []*cli.Command{
 			command.StartCommand(),
 		},
