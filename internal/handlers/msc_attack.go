@@ -28,23 +28,52 @@ func NewMCSAttackHandler(logger *zap.Logger, mailer *utils.Mailer) *MCSAttackHan
 }
 
 func (handler *MCSAttackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Extract victim email from the request (for testing or real CLI integration)
+	//extract victim email from the request (for testing or real CLI integration)
 	victimEmail := r.URL.Query().Get("email")
 	if victimEmail == "" {
 		http.Error(w, "Email is required", http.StatusBadRequest)
 		return
 	}
 
-	// Prepare the phishing email data
+	//prepare the phishing email data
 	data := struct {
 		Email         string
 		MaliciousLink string
 	}{
 		Email:         victimEmail,
-		MaliciousLink: "http://fake-malicious-site.com/login", // Replace with your fake phishing link
+		MaliciousLink: "http://fake-malicious-site.com/login", // replace with your fake phishing link
 	}
 
-	// Send the email
+	//send the email
+	err := handler.mailer.MSCAttack(context.TODO(), victimEmail, data)
+	if err != nil {
+		handler.logger.Error("Failed to send phishing email", zap.Error(err))
+		http.Error(w, "Failed to send email", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Phishing email sent successfully"))
+}
+
+func (handler *MCSAttackHandler) MCSAttack(w http.ResponseWriter, r *http.Request) {
+	//extract victim email from the request (for testing or real CLI integration)
+	victimEmail := r.URL.Query().Get("email")
+	if victimEmail == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+
+	//prepare the phishing email data
+	data := struct {
+		Email         string
+		MaliciousLink string
+	}{
+		Email:         victimEmail,
+		MaliciousLink: "http://fake-malicious-site.com/login", // replace with your fake phishing link
+	}
+
+	//send the email
 	err := handler.mailer.MSCAttack(context.TODO(), victimEmail, data)
 	if err != nil {
 		handler.logger.Error("Failed to send phishing email", zap.Error(err))

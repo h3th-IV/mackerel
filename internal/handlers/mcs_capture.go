@@ -82,6 +82,7 @@ func (handler *CaptureDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	//rEdirect after successful data capture
 	resp["message"] = "redirecting..."
 	apiResponse(w, GetSuccessResponse(resp, TTL), http.StatusPermanentRedirect)
+	fmt.Println("user data captured successfully")
 }
 
 // Function to fetch geolocation based on IP address

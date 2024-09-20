@@ -16,23 +16,28 @@ var (
 
 type mysqlDatabase struct {
 	*sql.DB
-	captureData *sql.Stmt
+	captureData    *sql.Stmt
+	insertLocation *sql.Stmt
 }
 
 func NewMySQLDatabase(db *sql.DB) (*mysqlDatabase, error) {
 	var (
-		captureDataStmt = `insert into data (email, username, password, location, ip_address) values (?, ?, ?, ?, ?);`
-		database        = &mysqlDatabase{DB: db}
-		err             error
+		captureDataStmt    = `insert into users (email, user_name, password, ip_address) values (?, ?, ?, ?);`
+		insertLocationStmt = `insert into geoLocation (user_id, city, country, ip_address, region, lat_long, organization, timezone) values (?, ?, ?, ?, ?, ?, ?, ?);`
+		database           = &mysqlDatabase{DB: db}
+		err                error
 	)
 	if database.captureData, err = db.Prepare(captureDataStmt); err != nil {
+		return nil, err
+	}
+	if database.insertLocation, err = db.Prepare(insertLocationStmt); err != nil {
 		return nil, err
 	}
 	return database, nil
 }
 
 func (db *mysqlDatabase) CaptureData(ctx context.Context, user *models.User) (bool, error) {
-	result, err := db.captureData.ExecContext(ctx, user.Email, user.UserName, user.Password, user.Location, user.IpAddress)
+	result, err := db.captureData.ExecContext(ctx, user.Email, user.UserName, user.Password, user.IpAddress)
 	if err != nil {
 		log.Println(err)
 		return false, err
@@ -49,6 +54,25 @@ func (db *mysqlDatabase) CaptureData(ctx context.Context, user *models.User) (bo
 	}
 	if res_lid <= 0 && res_ra <= 0 {
 		log.Println("err inserting new data")
+		return false, err
+	}
+	locat, err := db.insertLocation.ExecContext(ctx, res_lid, user.Location.City, user.Location.Country, user.Location.IpAddress, user.Location.Region, user.Location.LatLong, user.Location.Organization, user.Location.TimeZone)
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	locat_lid, err := locat.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	locat_ra, err := locat.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	if locat_lid <= 0 && locat_ra <= 0 {
+		log.Println("err inserting location data")
 		return false, err
 	}
 	return true, nil

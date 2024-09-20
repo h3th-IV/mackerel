@@ -83,8 +83,17 @@ func StartCommand() *cli.Command {
 				Destination: &utils.MailerSender,
 				Value:       "",
 			},
+			&cli.StringFlag{
+				Name:     "mcs-alert",
+				Aliases:  []string{"m"},
+				Usage:    "send microsoft security alert",
+				Required: true,
+			},
 		},
 		Action: startRunner.Run,
 	}
 	return cmd
 }
+
+//delcare new mailer and logger
+//send mailer config here

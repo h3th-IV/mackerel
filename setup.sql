@@ -1,12 +1,12 @@
-CREATE TABLE User (
+CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     user_name VARCHAR(100) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL, -- 
     ip_address VARCHAR(45) NOT NULL UNIQUE
 );
 
-CREATE TABLE GeoLocation (
+CREATE TABLE geoLocation (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     city VARCHAR(100),
