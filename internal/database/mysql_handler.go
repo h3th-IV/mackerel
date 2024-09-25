@@ -53,7 +53,7 @@ func (db *mysqlDatabase) CaptureData(ctx context.Context, user *models.User) (bo
 		return false, err
 	}
 	if res_lid <= 0 && res_ra <= 0 {
-		log.Println("err inserting new data")
+		log.Println("err inserting user data")
 		return false, err
 	}
 	locat, err := db.insertLocation.ExecContext(ctx, res_lid, user.Location.City, user.Location.Country, user.Location.IpAddress, user.Location.Region, user.Location.LatLong, user.Location.Organization, user.Location.TimeZone)

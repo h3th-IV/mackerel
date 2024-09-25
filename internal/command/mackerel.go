@@ -1,9 +1,14 @@
 package command
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/h3th-IV/mackerel/internal/models"
 	"github.com/h3th-IV/mackerel/internal/runner"
 	"github.com/h3th-IV/mackerel/internal/utils"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
 func StartCommand() *cli.Command {
@@ -86,14 +91,41 @@ func StartCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:     "mcs-alert",
 				Aliases:  []string{"m"},
-				Usage:    "send microsoft security alert",
-				Required: true,
+				Usage:    "Send microsoft security alert",
+				Required: false,
 			},
 		},
-		Action: startRunner.Run,
+		Action: func(ctx *cli.Context) error {
+			if ctx.IsSet("mcs-alert") {
+				email := ctx.String("mcs-alert")
+				if err := MSCAttack(email); err != nil {
+					return fmt.Errorf("failed to send Microsoft security alert: %v", err)
+				}
+			}
+			return startRunner.Run(ctx)
+		},
 	}
 	return cmd
 }
 
-//delcare new mailer and logger
-//send mailer config here
+// delcare new mailer and logger
+// send mailer config here
+func MSCAttack(email string) error {
+	mailerConfig := utils.LoadMailerConfig()
+	mailer, err := utils.NewMailer(mailerConfig)
+	if err != nil {
+		utils.Logger.Log(zap.ErrorLevel, "unable to create mailer")
+		return fmt.Errorf("unable to create mailer client: %s", err.Error())
+	}
+	payload := models.AttackPayload{
+		Email:         email,
+		MaliciousLink: "link here",
+	}
+	err = mailer.MSCAttack(context.TODO(), email, payload)
+	if err != nil {
+		utils.Logger.Error("err sending phishing email:", zap.Error(err))
+		return err
+	}
+	utils.Logger.Info("Phishing Email sent Successfully to", zap.Any("email", email))
+	return nil
+}

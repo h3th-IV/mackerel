@@ -1,9 +1,9 @@
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    user_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    user_name VARCHAR(100),
     password VARCHAR(255) NOT NULL, -- 
-    ip_address VARCHAR(45) NOT NULL UNIQUE
+    ip_address VARCHAR(45) UNIQUE
 );
 
 CREATE TABLE geoLocation (
@@ -18,3 +18,14 @@ CREATE TABLE geoLocation (
     timezone VARCHAR(100),
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
+
+
+export MC_DBNAME=mackerel
+export MC_PASSWORD=z3us
+export MC_USER=zeus
+export MC_HOST=localhost
+export MC_PORT=3306
+export MAILER_REGION=
+export MAILER_ACCESS_ID_KEY=
+export MAILER_SECRET_ACCESS_KEY=
+export MAILER_SENDER=

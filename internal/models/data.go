@@ -17,3 +17,8 @@ type GeoLocation struct {
 	Organization string `json:"org"` //Netwrok Provide Organization
 	TimeZone     string `json:"timezone"`
 }
+
+type AttackPayload struct {
+	Email         string
+	MaliciousLink string
+}
