@@ -22,7 +22,7 @@ type mysqlDatabase struct {
 
 func NewMySQLDatabase(db *sql.DB) (*mysqlDatabase, error) {
 	var (
-		captureDataStmt    = `insert into users (email, user_name, password, ip_address) values (?, ?, ?, ?);`
+		captureDataStmt    = `insert into user (email, user_name, password, ip_address) values (?, ?, ?, ?);`
 		insertLocationStmt = `insert into geoLocation (user_id, city, country, ip_address, region, lat_long, organization, timezone) values (?, ?, ?, ?, ?, ?, ?, ?);`
 		database           = &mysqlDatabase{DB: db}
 		err                error

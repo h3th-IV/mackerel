@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("hello world")
 	app := &cli.App{
 		Name:  "mackerel",
 		Usage: "A phishing simulation tool",
