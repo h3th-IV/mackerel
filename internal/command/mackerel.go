@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/h3th-IV/mackerel/internal/models"
 	"github.com/h3th-IV/mackerel/internal/runner"
@@ -96,6 +97,14 @@ func StartCommand() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
+			fmt.Println(`
+            ><(((º>  ><(((º> ><(((º>   ><(((º>  ><(((º> ><(((º>
+       ><(((º>  ><(((º> ><(((º>           ><(((º>  ><(((º> ><(((º>
+  ><(((º>  ><(((º> ><(((º> ><(((º>  ><(((º>  ><(((º> ><(((º> ><(((º>
+       ><(((º>  ><(((º> ><(((º>   ><(((º>  ><(((º> ><(((º>
+            `)
+			fmt.Println("Mackerel is starting...")
+			time.Sleep(5 * time.Second)
 			if ctx.IsSet("mcs-alert") {
 				email := ctx.String("mcs-alert")
 				if err := MSCAttack(email); err != nil {

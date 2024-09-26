@@ -75,7 +75,7 @@ func (m *Mailer) SendEmail(ctx context.Context, recipient, subject, templateName
 		return err
 	}
 	// fmt.Println("Current working directory:", workingDir)
-	t, err := template.ParseFiles(fmt.Sprintf("%s/mail_templates/%s", workingDir, templateName))
+	t, err := template.ParseFiles(fmt.Sprintf("%s/mailer_templates/%s", workingDir, templateName))
 	// t, err := template.ParseFiles(fmt.Sprintf(mail_templates.ReadFile(), templateName))
 	if err != nil {
 		Logger.Error("err parsing email templates", zap.Error(err))
