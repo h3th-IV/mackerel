@@ -34,7 +34,7 @@ def generte_serial_ids(start_id, num_ids):
             if validate_id(new_id):
                 generated_ids.append(new_id)
                 break
-        increment = random.randint(1000, 9999)  #incremet byrandom 4-digit nu
+        increment = random.randint(1000, 9999) #incremet byrandom 4-digit num
         current_id += increment
 
     return generated_ids
